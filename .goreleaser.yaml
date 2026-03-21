@@ -1,0 +1,22 @@
+version: 2
+builds:
+  - main: ./cmd/plugin
+    binary: workflow-plugin-tofu
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+
+archives:
+  - formats: [tar.gz]
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+
+changelog:
+  sort: asc

@@ -1,0 +1,8 @@
+# Binaries
+workflow-plugin-tofu
+dist/
+
+# Go
+*.test
+*.out
+vendor/
