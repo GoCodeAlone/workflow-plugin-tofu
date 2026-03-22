@@ -86,9 +86,11 @@ func tfTypeToAbstract(tfType string) string {
 		"aws_vpc":                             "infra.vpc",
 		"aws_ecs_service":                     "infra.container_service",
 		"aws_eks_cluster":                     "infra.k8s_cluster",
+		"aws_elasticache_cluster":             "infra.cache",
 		"aws_elasticache_replication_group":   "infra.cache",
 		"aws_lb":                              "infra.load_balancer",
 		"aws_route53_zone":                    "infra.dns",
+		"aws_route53_record":                  "infra.dns",
 		"aws_ecr_repository":                  "infra.registry",
 		"aws_apigatewayv2_api":                "infra.api_gateway",
 		"aws_security_group":                  "infra.firewall",
@@ -101,6 +103,7 @@ func tfTypeToAbstract(tfType string) string {
 		"google_cloud_run_service":            "infra.container_service",
 		"google_container_cluster":            "infra.k8s_cluster",
 		"google_redis_instance":               "infra.cache",
+		"google_compute_forwarding_rule":      "infra.load_balancer",
 		"google_compute_global_forwarding_rule": "infra.load_balancer",
 		"google_dns_managed_zone":             "infra.dns",
 		"google_artifact_registry_repository": "infra.registry",
@@ -108,8 +111,10 @@ func tfTypeToAbstract(tfType string) string {
 		"google_compute_firewall":             "infra.firewall",
 		"google_service_account":              "infra.iam_role",
 		"google_storage_bucket":               "infra.storage",
+		"google_compute_ssl_certificate":      "infra.certificate",
 		"google_compute_managed_ssl_certificate": "infra.certificate",
 		// Azure
+		"azurerm_mssql_server":               "infra.database",
 		"azurerm_postgresql_flexible_server": "infra.database",
 		"azurerm_virtual_network":            "infra.vpc",
 		"azurerm_container_group":            "infra.container_service",
@@ -144,6 +149,7 @@ func tfTypeToAbstract(tfType string) string {
 
 // providerFromTF extracts a short provider name from the TF provider string.
 // e.g. "provider[\"registry.terraform.io/hashicorp/aws\"]" → "aws"
+// e.g. "provider[\"registry.terraform.io/hashicorp/google\"]" → "gcp"
 func providerFromTF(provider string) string {
 	// Extract last path component after /
 	for i := len(provider) - 1; i >= 0; i-- {
@@ -152,10 +158,19 @@ func providerFromTF(provider string) string {
 			// Strip trailing "]
 			for j := range name {
 				if name[j] == '"' || name[j] == ']' {
-					return name[:j]
+					name = name[:j]
+					break
 				}
 			}
-			return name
+			// Normalize provider names to canonical short forms.
+			switch name {
+			case "google":
+				return "gcp"
+			case "azurerm":
+				return "azurerm"
+			default:
+				return name
+			}
 		}
 	}
 	return provider

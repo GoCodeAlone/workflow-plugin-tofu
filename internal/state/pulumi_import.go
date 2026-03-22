@@ -166,7 +166,8 @@ func pulumiTypeToAbstract(pulumiType string) string {
 	case strings.Contains(lower, "gcp:artifactregistry"):
 		return "infra.registry"
 	// Azure
-	case strings.Contains(lower, "azure-native:dbforpostgresql") || strings.Contains(lower, "azure:postgresql"):
+	case strings.Contains(lower, "azure-native:dbforpostgresql") || strings.Contains(lower, "azure:postgresql") ||
+		strings.Contains(lower, "azure:sql/server"):
 		return "infra.database"
 	case strings.Contains(lower, "azure-native:network/virtualnetwork") || strings.Contains(lower, "azure:network/virtualnetwork"):
 		return "infra.vpc"
