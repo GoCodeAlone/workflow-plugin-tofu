@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/GoCodeAlone/workflow/interfaces"
 )
 
 // TFState is the top-level structure of a terraform.tfstate file.
@@ -36,19 +38,19 @@ type TFInstance struct {
 
 // ImportTFState parses a .tfstate JSON byte slice and returns a slice of ResourceState.
 // Only "managed" mode resources with at least one instance are included.
-func ImportTFState(data []byte) ([]ResourceState, error) {
+func ImportTFState(data []byte) ([]interfaces.ResourceState, error) {
 	var tfstate TFState
 	if err := json.Unmarshal(data, &tfstate); err != nil {
 		return nil, fmt.Errorf("parse tfstate: %w", err)
 	}
 
-	var states []ResourceState
+		var states []interfaces.ResourceState
 	for _, res := range tfstate.Resources {
 		if res.Mode != "managed" {
 			continue
 		}
 		for _, inst := range res.Instances {
-			rs := ResourceState{
+			rs := interfaces.ResourceState{
 				ID:            resourceID(inst.Attributes),
 				Name:          res.Name,
 				Type:          tfTypeToAbstract(res.Type),
@@ -167,7 +169,7 @@ func providerFromTF(provider string) string {
 			case "google":
 				return "gcp"
 			case "azurerm":
-				return "azurerm"
+				return "azure"
 			default:
 				return name
 			}

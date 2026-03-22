@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/GoCodeAlone/workflow/interfaces"
 )
 
 // ExportTFState converts a slice of ResourceState into a .tfstate-compatible JSON byte slice.
 // The resulting format is Terraform state version 4.
-func ExportTFState(states []ResourceState) ([]byte, error) {
+func ExportTFState(states []interfaces.ResourceState) ([]byte, error) {
 	tfstate := TFState{
 		Version:          4,
 		TerraformVersion: "1.6.0",
@@ -42,7 +44,7 @@ func ExportTFState(states []ResourceState) ([]byte, error) {
 }
 
 // mergeAttributes combines ProviderID, AppliedConfig, and Outputs into a single attribute map.
-func mergeAttributes(rs ResourceState) map[string]any {
+func mergeAttributes(rs interfaces.ResourceState) map[string]any {
 	attrs := make(map[string]any)
 	attrs["id"] = rs.ProviderID
 	for k, v := range rs.AppliedConfig {

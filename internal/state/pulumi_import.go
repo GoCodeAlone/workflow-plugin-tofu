@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/GoCodeAlone/workflow/interfaces"
 )
 
 // PulumiCheckpoint is the top-level Pulumi checkpoint JSON structure.
@@ -39,7 +41,7 @@ type PulumiResource struct {
 
 // ImportPulumiCheckpoint parses a Pulumi checkpoint JSON byte slice and returns ResourceState entries.
 // Only custom resources (not component resources) are included.
-func ImportPulumiCheckpoint(data []byte) ([]ResourceState, error) {
+func ImportPulumiCheckpoint(data []byte) ([]interfaces.ResourceState, error) {
 	var checkpoint PulumiCheckpoint
 	if err := json.Unmarshal(data, &checkpoint); err != nil {
 		return nil, fmt.Errorf("parse pulumi checkpoint: %w", err)
@@ -49,7 +51,7 @@ func ImportPulumiCheckpoint(data []byte) ([]ResourceState, error) {
 		return nil, fmt.Errorf("pulumi checkpoint has no deployment section")
 	}
 
-	var states []ResourceState
+	var states []interfaces.ResourceState
 	for _, res := range checkpoint.Deployment.Resources {
 		if !res.Custom {
 			continue
@@ -63,7 +65,7 @@ func ImportPulumiCheckpoint(data []byte) ([]ResourceState, error) {
 		provider := pulumiProviderFromType(res.Type)
 		abstractType := pulumiTypeToAbstract(res.Type)
 
-		rs := ResourceState{
+		rs := interfaces.ResourceState{
 			ID:            res.ID,
 			Name:          name,
 			Type:          abstractType,

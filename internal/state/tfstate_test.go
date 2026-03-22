@@ -926,8 +926,8 @@ func TestImportTFState_Azure_AllTypes(t *testing.T) {
 	found := make(map[string]string)
 	for _, s := range states {
 		found[s.Name] = s.Type
-		if s.Provider != "azurerm" {
-			t.Errorf("resource %q: expected provider 'azurerm', got %q", s.Name, s.Provider)
+		if s.Provider != "azure" {
+			t.Errorf("resource %q: expected provider 'azure', got %q", s.Name, s.Provider)
 		}
 	}
 	for name, wantType := range want {
@@ -1362,7 +1362,7 @@ func TestExportTFState_RoundTrip_GCP(t *testing.T) {
 }
 
 func TestExportTFState_RoundTrip_Azure(t *testing.T) {
-	testExportRoundTrip(t, azureAllTypesTFState, "azurerm")
+	testExportRoundTrip(t, azureAllTypesTFState, "azure")
 }
 
 func TestExportTFState_RoundTrip_DO(t *testing.T) {
