@@ -7,6 +7,12 @@ import (
 	sdk "github.com/GoCodeAlone/workflow/plugin/external/sdk"
 )
 
+// Version is set at build time via -ldflags
+// "-X github.com/GoCodeAlone/workflow-plugin-tofu/internal.Version=X.Y.Z".
+// Default is a bare semver so plugin loaders that validate semver accept
+// unreleased dev builds; goreleaser overrides with the real release tag.
+var Version = "0.0.0"
+
 // tofuPlugin implements sdk.PluginProvider and sdk.StepProvider.
 type tofuPlugin struct{}
 
@@ -19,7 +25,7 @@ func NewTofuPlugin() sdk.PluginProvider {
 func (p *tofuPlugin) Manifest() sdk.PluginManifest {
 	return sdk.PluginManifest{
 		Name:        "workflow-plugin-tofu",
-		Version:     "0.1.0",
+		Version:     Version,
 		Author:      "GoCodeAlone",
 		Description: "OpenTofu/Terraform adapter: HCL generation, plan/apply execution, and state import/export",
 	}
