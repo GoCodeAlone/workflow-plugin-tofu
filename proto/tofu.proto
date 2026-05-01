@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+package workflow.plugins.tofu.v1;
+
+option go_package = "github.com/GoCodeAlone/workflow-plugin-tofu/internal/contracts";
+
+// ResourceSpec describes a single infrastructure resource to generate HCL for.
+message ResourceSpec {
+  // name is the Terraform resource name (e.g. "web_server").
+  string name = 1;
+  // type is the Terraform resource type (e.g. "aws_instance").
+  string type = 2;
+  // provider is the cloud provider (aws, gcp, azure, digitalocean).
+  string provider = 3;
+  // config holds provider-specific resource attributes as a JSON-encoded string.
+  string config_json = 4;
+}
+
+// IacGenerateHclConfig is the step config for step.iac_generate_hcl.
+message IacGenerateHclConfig {
+  // provider is the cloud provider to target (aws, gcp, azure, digitalocean). Required.
+  string provider = 1;
+  // output_dir is the directory where HCL files are written. Defaults to "terraform".
+  string output_dir = 2;
+  // resources lists the infrastructure resources to generate HCL for.
+  repeated ResourceSpec resources = 3;
+}
+
+// IacGenerateHclOutput is the step output for step.iac_generate_hcl.
+message IacGenerateHclOutput {
+  // output_dir is the directory where HCL files were written.
+  string output_dir = 1;
+  // provider is the cloud provider that was targeted.
+  string provider = 2;
+  // resource_count is the number of resource blocks written.
+  int32 resource_count = 3;
+}
+
+// TofuInitConfig is the step config for step.tofu_init.
+message TofuInitConfig {
+  // working_dir is the directory containing Terraform/OpenTofu configuration. Defaults to ".".
+  string working_dir = 1;
+  // binary_path is the path to the tofu or terraform binary. Auto-detected when empty.
+  string binary_path = 2;
+  // tool selects which CLI to use: "tofu" (default) or "terraform".
+  string tool = 3;
+}
+
+// TofuCommandOutput is the common step output for tofu_init, shared by commands
+// that return CLI stdout/stderr without additional structured data.
+message TofuCommandOutput {
+  // stdout is the captured standard output from the CLI command.
+  string stdout = 1;
+  // stderr is the captured standard error from the CLI command.
+  string stderr = 2;
+  // exit_code is the process exit code.
+  int32 exit_code = 3;
+}
+
+// TofuPlanConfig is the step config for step.tofu_plan.
+message TofuPlanConfig {
+  // working_dir is the directory containing Terraform/OpenTofu configuration. Defaults to ".".
+  string working_dir = 1;
+  // binary_path is the path to the tofu or terraform binary. Auto-detected when empty.
+  string binary_path = 2;
+  // tool selects which CLI to use: "tofu" (default) or "terraform".
+  string tool = 3;
+  // var_file is an optional path to a .tfvars file to pass to plan.
+  string var_file = 4;
+}
+
+// TofuPlanOutput is the step output for step.tofu_plan.
+message TofuPlanOutput {
+  // plan_file is the absolute path of the saved plan file (e.g. /work/plan.tfplan).
+  string plan_file = 1;
+  // stdout is the captured standard output from the plan command.
+  string stdout = 2;
+  // stderr is the captured standard error from the plan command.
+  string stderr = 3;
+  // exit_code is the process exit code (0 = no changes, 2 = changes present).
+  int32 exit_code = 4;
+}
+
+// TofuApplyConfig is the step config for step.tofu_apply.
+message TofuApplyConfig {
+  // working_dir is the directory containing Terraform/OpenTofu configuration. Defaults to ".".
+  string working_dir = 1;
+  // binary_path is the path to the tofu or terraform binary. Auto-detected when empty.
+  string binary_path = 2;
+  // tool selects which CLI to use: "tofu" (default) or "terraform".
+  string tool = 3;
+  // plan_file is the path to the saved plan file to apply.
+  string plan_file = 4;
+}
+
+// TofuApplyOutput is the step output for step.tofu_apply.
+message TofuApplyOutput {
+  // resource_ids lists the IDs of resources created or updated by the apply.
+  repeated string resource_ids = 1;
+  // stdout is the captured standard output from the apply command.
+  string stdout = 2;
+  // stderr is the captured standard error from the apply command.
+  string stderr = 3;
+  // exit_code is the process exit code.
+  int32 exit_code = 4;
+}
+
+// TofuStateImportConfig is the step config for step.tofu_state_import.
+message TofuStateImportConfig {
+  // state_file is the path to the Terraform state file to read. Required.
+  string state_file = 1;
+}
+
+// ResourceState describes a single resource read from a Terraform state file.
+message ResourceState {
+  // id is the provider-assigned resource ID.
+  string id = 1;
+  // name is the Terraform resource name.
+  string name = 2;
+  // type is the Terraform resource type.
+  string type = 3;
+  // provider is the provider that manages this resource.
+  string provider = 4;
+  // provider_id is the fully-qualified provider address.
+  string provider_id = 5;
+  // outputs holds the resource attributes as a JSON-encoded string.
+  string outputs_json = 6;
+  // created_at is the RFC3339 timestamp when the resource was created.
+  string created_at = 7;
+}
+
+// TofuStateImportOutput is the step output for step.tofu_state_import.
+message TofuStateImportOutput {
+  // resources lists all resources parsed from the state file.
+  repeated ResourceState resources = 1;
+  // count is the number of resources parsed.
+  int32 count = 2;
+}
+
+// TofuStateExportConfig is the step config for step.tofu_state_export.
+message TofuStateExportConfig {
+  // output_file is the path where the Terraform state file is written.
+  // Defaults to "terraform.tfstate".
+  string output_file = 1;
+}
+
+// TofuStateExportOutput is the step output for step.tofu_state_export.
+message TofuStateExportOutput {
+  // output_file is the path where the state file was written.
+  string output_file = 1;
+  // size is the byte length of the written state file.
+  int64 size = 2;
+}

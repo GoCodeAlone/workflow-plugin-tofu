@@ -19,3 +19,18 @@ jobs:
       - run: go build ./...
       - run: go test ./... -v -count=1
       - run: go vet ./...
+
+  wfctl-strict-contracts:
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Configure Git for private repos
+        run: git config --global url."https://x-access-token:${{ secrets.RELEASES_TOKEN }}@github.com/".insteadOf "https://github.com/"
+      - name: Validate strict plugin contracts
+        # audit plugins scans the PARENT directory for workflow-plugin-* repos.
+        # $GITHUB_WORKSPACE is the repo root (.../workflow-plugin-tofu); its
+        # parent directory contains the checked-out workflow-plugin-tofu dir.
+        run: go run github.com/GoCodeAlone/workflow/cmd/wfctl@v0.20.1 audit plugins --repo-root "$GITHUB_WORKSPACE/.." --strict-contracts
