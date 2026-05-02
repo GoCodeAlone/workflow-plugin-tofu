@@ -2,7 +2,11 @@ syntax = "proto3";
 
 package workflow.plugins.tofu.v1;
 
-option go_package = "github.com/GoCodeAlone/workflow-plugin-tofu/internal/contracts";
+import "google/protobuf/struct.proto";
+
+// go_package uses a public path under proto/ so generated Go bindings are
+// importable by external consumers if codegen is added in the future.
+option go_package = "github.com/GoCodeAlone/workflow-plugin-tofu/proto/tofu;tofupb";
 
 // ResourceSpec describes a single infrastructure resource to generate HCL for.
 message ResourceSpec {
@@ -12,13 +16,15 @@ message ResourceSpec {
   string type = 2;
   // provider is the cloud provider (aws, gcp, azure, digitalocean).
   string provider = 3;
-  // config holds provider-specific resource attributes as a JSON-encoded string.
-  string config_json = 4;
+  // config holds provider-specific resource attributes as a structured object.
+  // Keys and value types are provider-dependent.
+  google.protobuf.Struct config = 4;
 }
 
 // IacGenerateHclConfig is the step config for step.iac_generate_hcl.
 message IacGenerateHclConfig {
-  // provider is the cloud provider to target (aws, gcp, azure, digitalocean). Required.
+  // provider is the cloud provider to target (aws, gcp, azure, digitalocean).
+  // Enforced as required at runtime; proto3 does not enforce field presence.
   string provider = 1;
   // output_dir is the directory where HCL files are written. Defaults to "terraform".
   string output_dir = 2;
@@ -71,7 +77,8 @@ message TofuPlanConfig {
 
 // TofuPlanOutput is the step output for step.tofu_plan.
 message TofuPlanOutput {
-  // plan_file is the absolute path of the saved plan file (e.g. /work/plan.tfplan).
+  // plan_file is the path of the saved plan file (e.g. "plan.tfplan").
+  // The path is relative when working_dir is relative; absolute when working_dir is absolute.
   string plan_file = 1;
   // stdout is the captured standard output from the plan command.
   string stdout = 2;
@@ -107,7 +114,8 @@ message TofuApplyOutput {
 
 // TofuStateImportConfig is the step config for step.tofu_state_import.
 message TofuStateImportConfig {
-  // state_file is the path to the Terraform state file to read. Required.
+  // state_file is the path to the Terraform state file to read.
+  // Enforced as required at runtime; proto3 does not enforce field presence.
   string state_file = 1;
 }
 
@@ -123,8 +131,8 @@ message ResourceState {
   string provider = 4;
   // provider_id is the fully-qualified provider address.
   string provider_id = 5;
-  // outputs holds the resource attributes as a JSON-encoded string.
-  string outputs_json = 6;
+  // outputs holds the resource attributes as a structured object.
+  google.protobuf.Struct outputs = 6;
   // created_at is the RFC3339 timestamp when the resource was created.
   string created_at = 7;
 }
