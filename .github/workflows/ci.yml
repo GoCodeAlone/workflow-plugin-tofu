@@ -17,9 +17,13 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Configure Git for private repos
-        # Use --local to avoid leaving the token in the runner's global git config
-        # across jobs on shared self-hosted runners.
-        run: git config --local url."https://x-access-token:${{ secrets.RELEASES_TOKEN }}@github.com/".insteadOf "https://github.com/"
+        # Write auth into a job-scoped temp gitconfig so go module fetches
+        # (which run git in the module cache, not this repo) also pick it up.
+        # GIT_CONFIG_GLOBAL is exported via GITHUB_ENV so all subsequent steps see it.
+        run: |
+          GITCONFIG="${RUNNER_TEMP}/gitconfig-test"
+          git config -f "$GITCONFIG" url."https://x-access-token:${{ secrets.RELEASES_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          echo "GIT_CONFIG_GLOBAL=${GITCONFIG}" >> $GITHUB_ENV
       - run: go build ./...
       - run: go test ./... -v -count=1
       - run: go vet ./...
@@ -32,9 +36,13 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Configure Git for private repos
-        # Use --local to avoid leaving the token in the runner's global git config
-        # across jobs on shared self-hosted runners.
-        run: git config --local url."https://x-access-token:${{ secrets.RELEASES_TOKEN }}@github.com/".insteadOf "https://github.com/"
+        # Write auth into a job-scoped temp gitconfig so go module fetches
+        # (which run git in the module cache, not this repo) also pick it up.
+        # GIT_CONFIG_GLOBAL is exported via GITHUB_ENV so all subsequent steps see it.
+        run: |
+          GITCONFIG="${RUNNER_TEMP}/gitconfig-wfctl"
+          git config -f "$GITCONFIG" url."https://x-access-token:${{ secrets.RELEASES_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          echo "GIT_CONFIG_GLOBAL=${GITCONFIG}" >> $GITHUB_ENV
       - name: Validate strict plugin contracts
         # audit plugins scans the PARENT directory for workflow-plugin-* repos.
         # $GITHUB_WORKSPACE is the repo root (.../workflow-plugin-tofu); its

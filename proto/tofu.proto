@@ -12,7 +12,8 @@ option go_package = "github.com/GoCodeAlone/workflow-plugin-tofu/proto/tofu;tofu
 message ResourceSpec {
   // name is the Terraform resource name (e.g. "web_server").
   string name = 1;
-  // type is the Terraform resource type (e.g. "aws_instance").
+  // type is the abstract resource type used by this plugin (e.g. "infra.database",
+  // "infra.vpc", "infra.k8s_cluster"). Not a raw Terraform resource type.
   string type = 2;
   // provider is the cloud provider (aws, gcp, azure, digitalocean).
   string provider = 3;
@@ -102,8 +103,9 @@ message TofuApplyConfig {
 
 // TofuApplyOutput is the step output for step.tofu_apply.
 message TofuApplyOutput {
-  // resource_ids lists the IDs of resources created or updated by the apply.
-  repeated string resource_ids = 1;
+  // resource_ids maps Terraform resource addresses (e.g. "aws_db_instance.mydb")
+  // to the provider-assigned IDs created or updated by the apply.
+  map<string, string> resource_ids = 1;
   // stdout is the captured standard output from the apply command.
   string stdout = 2;
   // stderr is the captured standard error from the apply command.
@@ -125,15 +127,17 @@ message ResourceState {
   string id = 1;
   // name is the Terraform resource name.
   string name = 2;
-  // type is the Terraform resource type.
+  // type is the abstract resource type (e.g. "infra.database", "infra.vpc").
+  // Mapped from the raw Terraform type via the plugin's type registry.
   string type = 3;
-  // provider is the provider that manages this resource.
+  // provider is the short provider name (aws, gcp, azure, digitalocean).
   string provider = 4;
-  // provider_id is the fully-qualified provider address.
+  // provider_id is the provider-assigned resource ID (same as id; retained for
+  // compatibility). It is NOT a fully-qualified provider address.
   string provider_id = 5;
   // outputs holds the resource attributes as a structured object.
   google.protobuf.Struct outputs = 6;
-  // created_at is the RFC3339 timestamp when the resource was created.
+  // created_at is the RFC3339 timestamp when the resource state was imported.
   string created_at = 7;
 }
 
