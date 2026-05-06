@@ -1,0 +1,47 @@
+{
+  "version": "v1",
+  "contracts": [
+    {
+      "kind": "step",
+      "type": "step.iac_generate_hcl",
+      "mode": "strict",
+      "config": "workflow.plugins.tofu.v1.IacGenerateHclConfig",
+      "output": "workflow.plugins.tofu.v1.IacGenerateHclOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.tofu_init",
+      "mode": "strict",
+      "config": "workflow.plugins.tofu.v1.TofuInitConfig",
+      "output": "workflow.plugins.tofu.v1.TofuCommandOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.tofu_plan",
+      "mode": "strict",
+      "config": "workflow.plugins.tofu.v1.TofuPlanConfig",
+      "output": "workflow.plugins.tofu.v1.TofuPlanOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.tofu_apply",
+      "mode": "strict",
+      "config": "workflow.plugins.tofu.v1.TofuApplyConfig",
+      "output": "workflow.plugins.tofu.v1.TofuApplyOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.tofu_state_import",
+      "mode": "strict",
+      "config": "workflow.plugins.tofu.v1.TofuStateImportConfig",
+      "output": "workflow.plugins.tofu.v1.TofuStateImportOutput"
+    },
+    {
+      "kind": "step",
+      "type": "step.tofu_state_export",
+      "mode": "strict",
+      "config": "workflow.plugins.tofu.v1.TofuStateExportConfig",
+      "output": "workflow.plugins.tofu.v1.TofuStateExportOutput"
+    }
+  ]
+}

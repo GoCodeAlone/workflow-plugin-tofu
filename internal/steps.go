@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	sdk "github.com/GoCodeAlone/workflow/plugin/external/sdk"
 	"github.com/GoCodeAlone/workflow-plugin-tofu/internal/executor"
@@ -226,7 +227,7 @@ func (s *stateImportStep) Execute(
 			"provider":    rs.Provider,
 			"provider_id": rs.ProviderID,
 			"outputs":     rs.Outputs,
-			"created_at":  rs.CreatedAt,
+			"created_at":  rs.CreatedAt.UTC().Format(time.RFC3339),
 		}
 	}
 
