@@ -7,7 +7,7 @@
     "type": "external",
     "tier": "core",
     "private": false,
-    "minEngineVersion": "0.3.51",
+    "minEngineVersion": "0.51.7",
     "keywords": ["opentofu", "terraform", "iac", "hcl", "infrastructure", "aws", "gcp", "azure", "digitalocean"],
     "homepage": "https://github.com/GoCodeAlone/workflow-plugin-tofu",
     "repository": "https://github.com/GoCodeAlone/workflow-plugin-tofu",
