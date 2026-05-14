@@ -1,6 +1,6 @@
 {
     "name": "workflow-plugin-tofu",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "description": "OpenTofu/Terraform adapter: HCL generation from abstract infra specs, plan/apply execution, and state import/export",
     "author": "GoCodeAlone",
     "license": "MIT",
