@@ -3,15 +3,30 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. v0.1.3)'
+        required: true
+        type: string
 permissions:
   contents: write
 jobs:
   release:
-    runs-on: [self-hosted, Linux, X64]
+    # ubuntu-latest (GitHub-hosted) because workflow-plugin-tofu is a public
+    # repo and the GoCodeAlone org's Default self-hosted runner group has
+    # allows_public_repositories=false — the previous [self-hosted, Linux, X64]
+    # selector blocked this release job indefinitely. Same precedent +
+    # template as workflow-plugin-azure PR #11.
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # On push-tag, github.ref is refs/tags/<tag>; on workflow_dispatch,
+          # check out the requested tag explicitly so re-triggers for stuck
+          # tags work without a force-tag dance.
+          ref: ${{ inputs.tag || github.ref }}
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
