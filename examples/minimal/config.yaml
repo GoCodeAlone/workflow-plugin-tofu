@@ -1,8 +1,12 @@
 # workflow-plugin-tofu minimal example
-# Demonstrates HCL generation and plan execution via OpenTofu/Terraform.
+# Demonstrates HCL generation and plan/apply execution via OpenTofu/Terraform.
 # Validate with: wfctl validate --skip-unknown-types examples/minimal/config.yaml
 #
 # Prerequisites: tofu (or terraform) on $PATH + provider credentials
+#
+# step.tofu_plan config keys: working_dir, binary_path, tool, var_file
+# step.tofu_plan output:      plan_file (= <working_dir>/plan.tfplan), stdout, stderr, exit_code
+# step.tofu_apply config keys: working_dir, binary_path, tool, plan_file (optional)
 
 workflows:
   pipeline:
@@ -27,7 +31,6 @@ workflows:
         type: step.tofu_plan
         config:
           working_dir: /tmp/tofu-out
-          out_file: /tmp/tofu-out/plan.tfplan
 
       - name: apply
         type: step.tofu_apply
