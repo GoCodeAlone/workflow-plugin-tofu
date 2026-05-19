@@ -1,0 +1,36 @@
+# workflow-plugin-tofu minimal example
+# Demonstrates HCL generation and plan execution via OpenTofu/Terraform.
+# Validate with: wfctl validate --skip-unknown-types examples/minimal/config.yaml
+#
+# Prerequisites: tofu (or terraform) on $PATH + provider credentials
+
+workflows:
+  pipeline:
+    trigger:
+      type: http
+      config:
+        path: /iac/apply
+        method: POST
+    steps:
+      - name: generate-hcl
+        type: step.iac_generate_hcl
+        config:
+          provider: aws
+          output_dir: /tmp/tofu-out
+
+      - name: init
+        type: step.tofu_init
+        config:
+          working_dir: /tmp/tofu-out
+
+      - name: plan
+        type: step.tofu_plan
+        config:
+          working_dir: /tmp/tofu-out
+          out_file: /tmp/tofu-out/plan.tfplan
+
+      - name: apply
+        type: step.tofu_apply
+        config:
+          working_dir: /tmp/tofu-out
+          plan_file: /tmp/tofu-out/plan.tfplan
