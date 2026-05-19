@@ -29,7 +29,7 @@ OpenTofu/Terraform adapter for workflow IaC — generates HCL from abstract infr
 version: 1
 plugins:
   - name: workflow-plugin-tofu
-    version: 0.1.3
+    version: v0.1.2
     source: github.com/GoCodeAlone/workflow-plugin-tofu
 ```
 
