@@ -1,6 +1,6 @@
 {
     "name": "workflow-plugin-tofu",
-    "version": "0.1.2",
+    "version": "0.1.5",
     "description": "OpenTofu/Terraform adapter: HCL generation from abstract infra specs, plan/apply execution, and state import/export",
     "author": "GoCodeAlone",
     "license": "MIT",
@@ -8,7 +8,17 @@
     "tier": "core",
     "private": false,
     "minEngineVersion": "0.53.0",
-    "keywords": ["opentofu", "terraform", "iac", "hcl", "infrastructure", "aws", "gcp", "azure", "digitalocean"],
+    "keywords": [
+        "opentofu",
+        "terraform",
+        "iac",
+        "hcl",
+        "infrastructure",
+        "aws",
+        "gcp",
+        "azure",
+        "digitalocean"
+    ],
     "homepage": "https://github.com/GoCodeAlone/workflow-plugin-tofu",
     "repository": "https://github.com/GoCodeAlone/workflow-plugin-tofu",
     "capabilities": {
