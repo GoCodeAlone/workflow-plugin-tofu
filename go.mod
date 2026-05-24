@@ -3,7 +3,7 @@ module github.com/GoCodeAlone/workflow-plugin-tofu
 go 1.26.0
 
 require (
-	github.com/GoCodeAlone/workflow v0.62.0
+	github.com/GoCodeAlone/workflow v0.64.0
 	github.com/hashicorp/hcl/v2 v2.24.0
 	github.com/zclconf/go-cty v1.18.0
 )
