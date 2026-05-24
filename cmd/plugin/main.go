@@ -11,5 +11,5 @@ import (
 )
 
 func main() {
-	sdk.Serve(internal.NewTofuPlugin())
+	sdk.Serve(internal.NewTofuPlugin(), sdk.WithBuildVersion(sdk.ResolveBuildVersion(internal.Version)))
 }
